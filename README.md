@@ -8,5 +8,5 @@ Yet another flash card app.
 
 run `flutter build <platform> --release`
 
-for linux : `flutter build linux --release`
-for android : `flutter build apk --release`
+- for linux : `flutter build linux --release`
+- for android : `flutter build apk --release`
