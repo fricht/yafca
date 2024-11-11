@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:yafca/app.dart';
+import 'package:yafca/database.dart';
 
 
 void main() {
-  /* i'll need that at some point
   WidgetsFlutterBinding.ensureInitialized();
   initDatabase().then((value) => runApp(const AppEntry()));
-  */
   runApp(const AppEntry());
 }
 
