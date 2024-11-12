@@ -23,7 +23,21 @@ class Question {
   final List<bool> history;
   final bool archived;
 
-  Question(this.id, this.subject, this.question, this.answer, this.reversible, this.history, this.archived);
+  Question(this.id, this.subject, this.question, this.answer, this.reversible, int history, this.archived) : history = computeHistory(history);
+
+  static List<bool> computeHistory(int n) {
+    List<bool> history = [];
+    bool started = false;
+    for (int i = 0; i < 64; i++) {
+      bool b = ((n >> i) & 1) == 1;
+      if (started) {
+        history.add(b);
+      } else {
+        started = b;
+      }
+    }
+    return history;
+  }
 }
 
 
@@ -65,7 +79,7 @@ Future<List<String>> getActiveSubjects() async {
       mainTable,
       columns: [Fields.subject],
       where: "${Fields.archived} = ?",
-      whereArgs: [0],
+      whereArgs: [false],
       distinct: true,
     );
     await database.close();
@@ -82,7 +96,7 @@ Future<List<String>> getArchivedSubjects() async {
       mainTable,
       columns: [Fields.subject],
       where: "${Fields.archived} = ?",
-      whereArgs: [1],
+      whereArgs: [true],
       distinct: true,
     );
     await database.close();
@@ -92,7 +106,33 @@ Future<List<String>> getArchivedSubjects() async {
 }
 
 
-// get questions of subject (a/ a/o)
+Future<List<Question>> getSubjectQuestions(String subject, bool archived) async {
+  Database database = await openDatabase(dbName);
+  List<Map<String, dynamic>> result = await database.query(
+    mainTable,
+    columns: [
+      Fields.id,
+      Fields.subject,
+      Fields.question,
+      Fields.answer,
+      Fields.reversible,
+      Fields.history,
+      Fields.archived,
+    ],
+    where: "${Fields.archived} = ?",
+    whereArgs: [archived],
+  );
+  await database.close();
+  return result.map((row) => Question(
+      row[Fields.id],
+      row[Fields.subject],
+      row[Fields.question],
+      row[Fields.answer],
+      row[Fields.reversible],
+      row[Fields.history],
+      row[Fields.archived]
+  )).toList();
+}
 
 
 // set methods
