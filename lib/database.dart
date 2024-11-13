@@ -48,6 +48,7 @@ class Cache {
 
 
 Future<void> initDatabase() async {
+  deleteDatabase(dbName); // TODO : remove this line
   Database database = await openDatabase(
     dbName,
     version: 1,

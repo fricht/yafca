@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:yafca/subject_list.dart';
+import 'package:yafca/test/create_test_page.dart';
 import 'package:yafca/utils.dart';
 
 
@@ -12,12 +13,21 @@ class MainScreen extends StatefulWidget {
 
 class _MainScreenState extends State<MainScreen> {
 
-  int _currentIndex = 0;
+  int _currentIndex = 3;
 
   void setCurrentIndex(int index) {
     setState(() {
       _currentIndex = index;
     });
+  }
+
+  FloatingActionButton genFABArchivedPreset(bool archived) {
+    return FloatingActionButton(
+      child: const Icon(Icons.add),
+      onPressed: () {
+        showSnackBar(context, Text("Current index : $_currentIndex"));
+      },
+    );
   }
 
   @override
@@ -26,7 +36,7 @@ class _MainScreenState extends State<MainScreen> {
       appBar: AppBar(
         title: const Text("YAFCA"),
       ),
-      body: const [null, SubjectList(false), SubjectList(true), null][_currentIndex],
+      body: const [CreateTestPage(), SubjectList(false), SubjectList(true), null][_currentIndex],
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _currentIndex,
         onTap: setCurrentIndex,
@@ -36,13 +46,10 @@ class _MainScreenState extends State<MainScreen> {
           BottomNavigationBarItem(icon: Icon(Icons.archive), label: "Archives"),
           BottomNavigationBarItem(icon: Icon(Icons.settings), label: "Settings"),
         ],
+        selectedItemColor: Colors.blue,
+        unselectedItemColor: const Color.fromARGB(255, 100, 100, 100),
       ),
-      floatingActionButton: FloatingActionButton(
-        child: const Icon(Icons.add),
-        onPressed: () {
-          showSnackBar(context, Text("Current index : $_currentIndex"));
-        },
-      ),
+      floatingActionButton: [null, genFABArchivedPreset(false), genFABArchivedPreset(true), null][_currentIndex],
     );
   }
 }

@@ -6,7 +6,6 @@ import 'package:yafca/database.dart';
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
   initDatabase().then((value) => runApp(const AppEntry()));
-  runApp(const AppEntry());
 }
 
 
