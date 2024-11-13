@@ -79,7 +79,7 @@ Future<List<String>> getActiveSubjects() async {
       mainTable,
       columns: [Fields.subject],
       where: "${Fields.archived} = ?",
-      whereArgs: [false],
+      whereArgs: [0],
       distinct: true,
     );
     await database.close();
@@ -96,7 +96,7 @@ Future<List<String>> getArchivedSubjects() async {
       mainTable,
       columns: [Fields.subject],
       where: "${Fields.archived} = ?",
-      whereArgs: [true],
+      whereArgs: [1],
       distinct: true,
     );
     await database.close();
@@ -142,7 +142,7 @@ Future<List<Question>> getSubjectQuestions(String subject, bool archived) async 
 
 // add to history
 
-// edit question bt ID
+// edit question by ID
 
 // delete by ID
 

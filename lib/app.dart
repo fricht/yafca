@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:yafca/subject_list.dart';
 import 'package:yafca/utils.dart';
 
 
@@ -25,10 +26,12 @@ class _MainScreenState extends State<MainScreen> {
       appBar: AppBar(
         title: const Text("YAFCA"),
       ),
+      body: const [null, SubjectList(false), SubjectList(true), null][_currentIndex],
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _currentIndex,
         onTap: setCurrentIndex,
         items: const [
+          BottomNavigationBarItem(icon: Icon(Icons.check_circle), label: "Test"),
           BottomNavigationBarItem(icon: Icon(Icons.list), label: "Topics"),
           BottomNavigationBarItem(icon: Icon(Icons.archive), label: "Archives"),
           BottomNavigationBarItem(icon: Icon(Icons.settings), label: "Settings"),
