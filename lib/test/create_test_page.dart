@@ -17,9 +17,9 @@ class _CreateTestPageState extends State<CreateTestPage> {
   bool isLoading = true;
 
   Future<void> fetchSubjects() async {
-    List<String> fetchedSubjects = await getActiveSubjects();
+    Set<String> fetchedSubjects = await getActiveSubjects();
     setState(() {
-      subjects = fetchedSubjects;
+      subjects = fetchedSubjects.toList();
       isLoading = false;
     });
     updateBtnState();
@@ -52,7 +52,7 @@ class _CreateTestPageState extends State<CreateTestPage> {
 
   void launchTest() {
     // todo : really launch test
-    showSnackBar(context, Text("NoO"));
+    showSnackBar(context, Text("Sorry, not yet implemented"));
   }
 
   void updateBtnState() {
@@ -86,7 +86,7 @@ class _CreateTestPageState extends State<CreateTestPage> {
               backgroundColor: WidgetStatePropertyAll(Colors.green),
             ),
             onPressed: canLaunch ? launchTest : null,
-            child: const Text("GO"),
+            child: const Text("Start Test"),
           ),
         ),
       ],

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:yafca/add_question.dart';
 import 'package:yafca/subject_list.dart';
 import 'package:yafca/test/create_test_page.dart';
-import 'package:yafca/utils.dart';
 
 
 class MainScreen extends StatefulWidget {
@@ -13,11 +13,11 @@ class MainScreen extends StatefulWidget {
 
 class _MainScreenState extends State<MainScreen> {
 
-  int _currentIndex = 3;
+  int currentIndex = 3;
 
   void setCurrentIndex(int index) {
     setState(() {
-      _currentIndex = index;
+      currentIndex = index;
     });
   }
 
@@ -25,7 +25,10 @@ class _MainScreenState extends State<MainScreen> {
     return FloatingActionButton(
       child: const Icon(Icons.add),
       onPressed: () {
-        showSnackBar(context, Text("Current index : $_currentIndex"));
+        Navigator.of(context).push(
+          MaterialPageRoute(builder: (_) => AddQuestion(archived))
+        ).then((_) {setState(() {currentIndex = 0;});});
+        // TODO : find a method to refresh the current list instead of returning to the test page
       },
     );
   }
@@ -36,9 +39,9 @@ class _MainScreenState extends State<MainScreen> {
       appBar: AppBar(
         title: const Text("YAFCA"),
       ),
-      body: const [CreateTestPage(), SubjectList(false), SubjectList(true), null][_currentIndex],
+      body: const [CreateTestPage(), SubjectList(false, key: ValueKey("Topics")), SubjectList(true, key: ValueKey("Archives")), null][currentIndex],
       bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _currentIndex,
+        currentIndex: currentIndex,
         onTap: setCurrentIndex,
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.check_circle), label: "Test"),
@@ -49,7 +52,7 @@ class _MainScreenState extends State<MainScreen> {
         selectedItemColor: Colors.blue,
         unselectedItemColor: const Color.fromARGB(255, 100, 100, 100),
       ),
-      floatingActionButton: [null, genFABArchivedPreset(false), genFABArchivedPreset(true), null][_currentIndex],
+      floatingActionButton: [null, genFABArchivedPreset(false), genFABArchivedPreset(true), null][currentIndex],
     );
   }
 }

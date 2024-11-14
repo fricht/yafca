@@ -21,9 +21,9 @@ class _SubjectListState extends State<SubjectList> {
   }
 
   Future<void> fetchSubjects() async {
-    List<String> fetchedSubjects = await (widget.archived ? getArchivedSubjects() : getActiveSubjects());
+    Set<String> fetchedSubjects = await (widget.archived ? getArchivedSubjects() : getActiveSubjects());
     setState(() {
-      subjects = fetchedSubjects;
+      subjects = fetchedSubjects.toList();
     });
   }
 

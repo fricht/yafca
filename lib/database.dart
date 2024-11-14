@@ -1,7 +1,8 @@
 import 'package:sqflite/sqflite.dart';
+import 'package:path/path.dart';
 
 
-const String dbName = "com.fricht.yafca.db";
+late final String dbName;
 const String mainTable = "questions";
 class Fields {
   static const String id = "id";
@@ -38,17 +39,41 @@ class Question {
     }
     return history;
   }
+
+  int listToHistory() {
+    int n = 1;
+    for (bool h in history.reversed) {
+      n = (n << 1) | (h ? 1 : 0);
+    }
+    return n;
+  }
+
+  Map<String, dynamic> getInsertMap() {
+    return {
+      Fields.subject: subject,
+      Fields.question: question,
+      Fields.answer: answer,
+      Fields.reversible: reversible ? 1 : 0,
+      Fields.history: listToHistory(),
+      Fields.archived: archived ? 1 : 0,
+    };
+  }
 }
 
 
 class Cache {
-  static List<String>? activeSubjects;
-  static List<String>? archivedSubjects;
+  static Set<String>? activeSubjects;
+  static Set<String>? archivedSubjects;
+
+  static void unsetCache() {
+    activeSubjects = null;
+    archivedSubjects = null;
+  }
 }
 
 
 Future<void> initDatabase() async {
-  deleteDatabase(dbName); // TODO : remove this line
+  dbName = join(await getDatabasesPath(), "com.fricht.yafca.db");
   Database database = await openDatabase(
     dbName,
     version: 1,
@@ -73,7 +98,7 @@ Future<void> initDatabase() async {
 // get methods
 
 
-Future<List<String>> getActiveSubjects() async {
+Future<Set<String>> getActiveSubjects() async {
   if (Cache.activeSubjects == null) {
     Database database = await openDatabase(dbName);
     List<Map<String, dynamic>> result = await database.query(
@@ -84,13 +109,13 @@ Future<List<String>> getActiveSubjects() async {
       distinct: true,
     );
     await database.close();
-    Cache.activeSubjects = result.map((row) => row[Fields.subject] as String).toList();
+    Cache.activeSubjects = result.map((row) => row[Fields.subject] as String).toSet();
   }
   return Cache.activeSubjects!;
 }
 
 
-Future<List<String>> getArchivedSubjects() async {
+Future<Set<String>> getArchivedSubjects() async {
   if (Cache.archivedSubjects == null) {
     Database database = await openDatabase(dbName);
     List<Map<String, dynamic>> result = await database.query(
@@ -101,9 +126,14 @@ Future<List<String>> getArchivedSubjects() async {
       distinct: true,
     );
     await database.close();
-    Cache.archivedSubjects = result.map((row) => row[Fields.subject] as String).toList();
+    Cache.archivedSubjects = result.map((row) => row[Fields.subject] as String).toSet();
   }
   return Cache.archivedSubjects!;
+}
+
+
+Future<Set<String>> getAllSubjects() async {
+  return {...(await getActiveSubjects()), ...(await getArchivedSubjects())};
 }
 
 
@@ -140,6 +170,15 @@ Future<List<Question>> getSubjectQuestions(String subject, bool archived) async 
 
 
 // add question
+Future<void> addQuestion(Question question) async {
+  Cache.unsetCache();
+  Database database = await openDatabase(dbName);
+  database.insert(
+    mainTable,
+    question.getInsertMap(),
+  );
+  await database.close();
+}
 
 // add to history
 
