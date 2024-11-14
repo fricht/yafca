@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:yafca/database.dart';
+import 'package:yafca/test/take_test.dart';
 import 'package:yafca/utils.dart';
 
 
@@ -51,8 +52,13 @@ class _CreateTestPageState extends State<CreateTestPage> {
   }
 
   void launchTest() {
-    // todo : really launch test
-    showSnackBar(context, Text("Sorry, not yet implemented"));
+    List<String> filteredSubjects = [];
+    for (int index in selectedSubjects) {
+      filteredSubjects.add(subjects[index]);
+    }
+    Navigator.of(context).push(
+      MaterialPageRoute(builder: (_) => TakeTest(filteredSubjects))
+    );
   }
 
   void updateBtnState() {

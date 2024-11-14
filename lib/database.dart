@@ -151,7 +151,7 @@ Future<List<Question>> getSubjectQuestions(String subject, bool archived) async 
       Fields.archived,
     ],
     where: "${Fields.archived} = ?",
-    whereArgs: [archived],
+    whereArgs: [archived ? 1 : 0],
   );
   await database.close();
   return result.map((row) => Question(
@@ -159,9 +159,9 @@ Future<List<Question>> getSubjectQuestions(String subject, bool archived) async 
       row[Fields.subject],
       row[Fields.question],
       row[Fields.answer],
-      row[Fields.reversible],
+      row[Fields.reversible] == 1,
       row[Fields.history],
-      row[Fields.archived]
+      row[Fields.archived] == 1,
   )).toList();
 }
 
