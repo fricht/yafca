@@ -150,8 +150,8 @@ Future<List<Question>> getSubjectQuestions(String subject, bool archived) async 
       Fields.history,
       Fields.archived,
     ],
-    where: "${Fields.archived} = ?",
-    whereArgs: [archived ? 1 : 0],
+    where: "${Fields.archived} = ?1 AND ${Fields.subject} = ?2",
+    whereArgs: [archived ? 1 : 0, subject],
   );
   await database.close();
   return result.map((row) => Question(
