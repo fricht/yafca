@@ -19,15 +19,22 @@ class _SubjectListState extends State<SubjectList> {
   @override
   void initState() {
     super.initState();
-    fetchSubjects().then((_) => fetchQuestions());
+    doInitStuff();
+  }
+
+  Future<void> doInitStuff() async {
+    await fetchSubjects();
+    setState(() {
+      isLoading = false;
+    });
+    await fetchQuestions();
+    setState(() {});
   }
 
   Future<void> fetchSubjects() async {
     Set<String> fetchedSubjects = await (widget.archived ? getArchivedSubjects() : getActiveSubjects());
-    subjectQuestions = [null];
-    setState(() {
-      subjects = fetchedSubjects.toList();
-    });
+    subjectQuestions = List.filled(fetchedSubjects.length, null);
+    subjects = fetchedSubjects.toList();
   }
 
   Future<void> fetchQuestions() async {
