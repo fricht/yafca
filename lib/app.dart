@@ -27,7 +27,9 @@ class _MainScreenState extends State<MainScreen> {
       onPressed: () {
         Navigator.of(context).push(
           MaterialPageRoute(builder: (_) => AddQuestion(archived))
-        ).then((_) {setState(() {currentIndex = 0;});});
+        ).then((_) {
+          setState(() {currentIndex = 0;});
+        });
         // TODO : find a method to refresh the current list instead of returning to the test page
       },
     );

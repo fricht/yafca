@@ -187,3 +187,13 @@ Future<void> addQuestion(Question question) async {
 // delete by ID
 
 // delete whole subject (a/ a/o)
+Future<void> deleteSubject(bool archived, String subject) async {
+  Cache.unsetCache();
+  Database database = await openDatabase(dbName);
+  database.delete(
+    mainTable,
+    where: "${Fields.archived} = ?1 AND ${Fields.subject} = ?2",
+    whereArgs: [archived ? 1 : 0, subject],
+  );
+  await database.close();
+}

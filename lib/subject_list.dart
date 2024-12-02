@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:yafca/database.dart';
+import 'package:yafca/utils.dart';
 
 
 class SubjectList extends StatefulWidget {
@@ -28,7 +29,6 @@ class _SubjectListState extends State<SubjectList> {
       isLoading = false;
     });
     await fetchQuestions();
-    setState(() {});
   }
 
   Future<void> fetchSubjects() async {
@@ -39,12 +39,15 @@ class _SubjectListState extends State<SubjectList> {
 
   Future<void> fetchQuestions() async {
     for (int i = 0; i < subjects.length; i++) {
-      subjectQuestions[i] = await getSubjectQuestions(subjects[i], widget.archived);
+      List<Question> value = await getSubjectQuestions(subjects[i], widget.archived);
+      setState(() {
+        subjectQuestions[i] = value;
+      });
     }
   }
 
   Widget subjectCardBuilder(BuildContext context, int i) {
-    final s = subjects[i];
+    final subject = subjects[i];
     double? ratio;
     if (subjectQuestions[i] != null) {
       int successCount = 0;
@@ -63,8 +66,71 @@ class _SubjectListState extends State<SubjectList> {
     }
     return Card(
       child: ListTile(
-        title: Text(s),
+        title: Text(subject),
         trailing: ratio == null ? null : Text("$ratio%"),
+        onLongPress: () {
+          showModalBottomSheet(
+            context: context,
+            builder: (context) {
+              return SizedBox(
+                width: double.infinity,
+                child: Column(
+                  children: [
+                    Container(
+                      padding: EdgeInsets.only(top: 12, bottom: 5),
+                      child: Text(
+                        subject,
+                        style: TextStyle(
+                          fontSize: 25
+                        ),
+                      ),
+                    ),
+                    TextButton(
+                      onPressed: () {
+                        showDialog(
+                          context: context,
+                          builder: (context) {
+                            return AlertDialog(
+                              title: const Text("Are you sure ?"),
+                              content: Text("You are about to completely delete the ${widget.archived ? 'archived' : 'unarchived'} subject $subject."
+                                  "This action is not reversible"),
+                              actions: [
+                                TextButton(onPressed: () {Navigator.of(context).pop();}, child: const Text("Cancel")),
+                                TextButton(onPressed: () {
+                                  Navigator.of(context).pop();
+                                  Future<void> delete_future = deleteSubject(widget.archived, subject);
+                                  showSnackBar(context, Text("Subject $subject has been removed."));
+                                  Navigator.of(context).pop();
+                                  delete_future.then((_) {
+                                    setState(() {
+                                      isLoading = true;
+                                    });
+                                    doInitStuff();
+                                  });
+                                }, child: Text("Delete '$subject'", style: TextStyle(color: Colors.red))),
+                              ],
+                            );
+                          }
+                        );
+                      },
+                      child: Text(
+                        "Delete All Subject",
+                        style: TextStyle(color: Colors.red)
+                      )
+                    ),
+                    TextButton(
+                      onPressed: null,
+                      child: Text(widget.archived ? "Unarchive" : "Archive")
+                    ),
+                  ],
+                ),
+              );
+            },
+          );
+        },
+        onTap: () {
+          showSnackBar(context, Text("Sorry Unimplemented Yet"));
+        },
       ),
     );
   }
