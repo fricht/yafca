@@ -150,7 +150,7 @@ Future<List<Question>> getSubjectQuestions(String subject, bool archived) async 
       Fields.history,
       Fields.archived,
     ],
-    where: "${Fields.archived} = ?1 AND ${Fields.subject} = ?2",
+    where: "${Fields.archived} = ? AND ${Fields.subject} = ?",
     whereArgs: [archived ? 1 : 0, subject],
   );
   await database.close();
@@ -186,14 +186,27 @@ Future<void> addQuestion(Question question) async {
 
 // delete by ID
 
-// delete whole subject (a/ a/o)
+
 Future<void> deleteSubject(bool archived, String subject) async {
   Cache.unsetCache();
   Database database = await openDatabase(dbName);
   database.delete(
     mainTable,
-    where: "${Fields.archived} = ?1 AND ${Fields.subject} = ?2",
+    where: "${Fields.archived} = ? AND ${Fields.subject} = ?",
     whereArgs: [archived ? 1 : 0, subject],
+  );
+  await database.close();
+}
+
+
+Future<void> changeSubjectArchiveState(bool isArchived, String subject) async {
+  Cache.unsetCache();
+  Database database = await openDatabase(dbName);
+  database.update(
+    mainTable,
+    {Fields.archived: isArchived ? 0 : 1},
+    where: "${Fields.archived} = ? AND ${Fields.subject} = ?",
+    whereArgs: [isArchived ? 1 : 0, subject]
   );
   await database.close();
 }

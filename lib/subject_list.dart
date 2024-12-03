@@ -98,13 +98,13 @@ class _SubjectListState extends State<SubjectList> {
                                 TextButton(onPressed: () {Navigator.of(context).pop();}, child: const Text("Cancel")),
                                 TextButton(onPressed: () {
                                   Navigator.of(context).pop();
-                                  Future<void> delete_future = deleteSubject(widget.archived, subject);
+                                  Future<void> deleteFuture = deleteSubject(widget.archived, subject);
+                                  setState(() {
+                                    isLoading = true;
+                                  });
                                   showSnackBar(context, Text("Subject $subject has been removed."));
                                   Navigator.of(context).pop();
-                                  delete_future.then((_) {
-                                    setState(() {
-                                      isLoading = true;
-                                    });
+                                  deleteFuture.then((_) {
                                     doInitStuff();
                                   });
                                 }, child: Text("Delete '$subject'", style: TextStyle(color: Colors.red))),
@@ -119,7 +119,17 @@ class _SubjectListState extends State<SubjectList> {
                       )
                     ),
                     TextButton(
-                      onPressed: null,
+                      onPressed: () {
+                        Future<void> deleteFuture = changeSubjectArchiveState(widget.archived, subject);
+                        setState(() {
+                          isLoading = true;
+                        });
+                        showSnackBar(context, Text("Subject $subject has been ${widget.archived ? 'unarchived' : 'archived'}."));
+                        Navigator.of(context).pop();
+                        deleteFuture.then((_) {
+                          doInitStuff();
+                        });
+                      },
                       child: Text(widget.archived ? "Unarchive" : "Archive")
                     ),
                   ],
