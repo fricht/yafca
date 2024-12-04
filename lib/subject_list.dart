@@ -61,7 +61,7 @@ class _SubjectListState extends State<SubjectList> {
         }
       }
       if (totalCount > 0) {
-        ratio = successCount / totalCount;
+        ratio = successCount * 100 / totalCount;
       }
     }
     return Card(

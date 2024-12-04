@@ -16,6 +16,7 @@ class TakeTest extends StatefulWidget {
 
 class _TakeTestState extends State<TakeTest> {
   bool isLoading = true;
+  bool isWaiting = false;
   List<Question>? questions;
   List<bool> swaps = [];
   int currentQuestion = 0;
@@ -28,6 +29,7 @@ class _TakeTestState extends State<TakeTest> {
     for (String subject in widget.subjects) {
       allQuestions.addAll(await getSubjectQuestions(subject, false));
     }
+    allQuestions.shuffle();
     questions = allQuestions;
     for (Question _ in allQuestions) {
       swaps.add(Random().nextBool());
@@ -43,12 +45,20 @@ class _TakeTestState extends State<TakeTest> {
     fetchQuestions();
   }
 
-  void handleValidation(bool success) {
-    showSnackBar(context, const Text("TODO : register successness")); // TODO : register successness
-    if (currentQuestion == questions!.length - 1) {
+  void handleValidation(bool success) async {
+    // register success
+    Question question = questions![currentQuestion];
+    question.history.add(success);
+    Future<void> updateFuture = updateQuestion(question);
+    setState(() {
+      isWaiting = true;
+    });
+    await updateFuture;
+    if (currentQuestion >= questions!.length - 1) {
       Navigator.of(context).pop();
     } else {
       setState(() {
+        isWaiting = false;
         isCorrect = null;
         revealed = false;
         currentQuestion++;
@@ -133,7 +143,11 @@ class _TakeTestState extends State<TakeTest> {
                       style: const ButtonStyle(
                         backgroundColor: WidgetStatePropertyAll(Colors.red),
                       ),
-                      child: Center(child: Text(isCorrect == false ? "Wrong\n(Tap again to confirm)" : "Wrong")),
+                      child: Center(
+                        child: (isWaiting && isCorrect == false) ?
+                          CircularProgressIndicator()
+                          : Text(isCorrect == false ? "Wrong\n(Tap again to confirm)" : "Wrong")
+                      ),
                     ),
                   ),
                 ),
@@ -155,7 +169,11 @@ class _TakeTestState extends State<TakeTest> {
                       style: const ButtonStyle(
                         backgroundColor: WidgetStatePropertyAll(Colors.green),
                       ),
-                      child: Center(child: Text(isCorrect == true ? "Right\n(Tap again to confirm)" : "Right")),
+                      child: Center(
+                        child: (isWaiting && isCorrect == true) ?
+                          CircularProgressIndicator()
+                          : Text(isCorrect == true ? "Right\n(Tap again to confirm)" : "Right")
+                      ),
                     ),
                   ),
                 ),

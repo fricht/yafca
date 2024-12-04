@@ -17,19 +17,19 @@ class Fields {
 
 class Question {
   final int id;
-  final String subject;
-  final String question;
-  final String answer;
-  final bool reversible;
-  final List<bool> history;
-  final bool archived;
+  String subject;
+  String question;
+  String answer;
+  bool reversible;
+  List<bool> history;
+  bool archived;
 
   Question(this.id, this.subject, this.question, this.answer, this.reversible, int history, this.archived) : history = computeHistory(history);
 
   static List<bool> computeHistory(int n) {
     List<bool> history = [];
     bool started = false;
-    for (int i = 0; i < 64; i++) {
+    for (int i = 63; i >= 0; i--) {
       bool b = ((n >> i) & 1) == 1;
       if (started) {
         history.add(b);
@@ -42,7 +42,7 @@ class Question {
 
   int listToHistory() {
     int n = 1;
-    for (bool h in history.reversed) {
+    for (bool h in history) {
       n = (n << 1) | (h ? 1 : 0);
     }
     return n;
@@ -182,7 +182,17 @@ Future<void> addQuestion(Question question) async {
 
 // add to history
 
-// edit question by ID
+Future<void> updateQuestion(Question question) async {
+  Cache.unsetCache();
+  Database database = await openDatabase(dbName);
+  database.update(
+    mainTable,
+    question.getInsertMap(),
+    where: "id = ?",
+    whereArgs: [question.id]
+  );
+  await database.close();
+}
 
 // delete by ID
 
