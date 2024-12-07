@@ -209,7 +209,26 @@ Future<void> deleteSubject(bool archived, String subject) async {
 }
 
 
-Future<void> changeSubjectArchiveState(bool isArchived, String subject) async {
+Future<void> deleteQuestion(int id) async {
+  Cache.unsetCache();
+  Database database = await openDatabase(dbName);
+  database.delete(
+    mainTable,
+    where: "${Fields.id} = ?",
+    whereArgs: [id],
+  );
+  await database.close();
+}
+
+
+Future<void> deleteQuestions(List<int> ids) async {
+  for (int id in ids) {
+    await deleteQuestion(id);
+  }
+}
+
+
+Future<void> setSubjectArchiveState(bool isArchived, String subject) async {
   Cache.unsetCache();
   Database database = await openDatabase(dbName);
   database.update(
@@ -219,4 +238,24 @@ Future<void> changeSubjectArchiveState(bool isArchived, String subject) async {
     whereArgs: [isArchived ? 1 : 0, subject]
   );
   await database.close();
+}
+
+
+Future<void> setQuestionArchiveState(bool archive, int id) async {
+  Cache.unsetCache();
+  Database database = await openDatabase(dbName);
+  database.update(
+      mainTable,
+      {Fields.archived: archive ? 1 : 0},
+      where: "${Fields.id} = ?",
+      whereArgs: [id]
+  );
+  await database.close();
+}
+
+
+Future<void> setQuestionsArchiveState(bool archive, List<int> ids) async {
+  for (int id in ids) {
+    await setQuestionArchiveState(archive, id);
+  }
 }

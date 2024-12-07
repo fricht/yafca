@@ -33,9 +33,9 @@ class _CreateTestPageState extends State<CreateTestPage> {
 
   Widget subjectCardBuilder(BuildContext context, int index) {
     return Card(
+      color: selectedSubjects.contains(index) ? Colors.green : null,
       child: ListTile(
         title: Text(subjects[index]),
-        tileColor: selectedSubjects.contains(index) ? Colors.lightGreen : null,
         onTap: () {
           setState(() {
             if (selectedSubjects.contains(index)) {

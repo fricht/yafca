@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:yafca/database.dart';
+import 'package:yafca/question_list.dart';
 import 'package:yafca/utils.dart';
 
 
@@ -120,13 +121,13 @@ class _SubjectListState extends State<SubjectList> {
                     ),
                     TextButton(
                       onPressed: () {
-                        Future<void> deleteFuture = changeSubjectArchiveState(widget.archived, subject);
+                        Future<void> archiveFuture = setSubjectArchiveState(widget.archived, subject);
                         setState(() {
                           isLoading = true;
                         });
                         showSnackBar(context, Text("Subject $subject has been ${widget.archived ? 'unarchived' : 'archived'}."));
                         Navigator.of(context).pop();
-                        deleteFuture.then((_) {
+                        archiveFuture.then((_) {
                           doInitStuff();
                         });
                       },
@@ -139,7 +140,14 @@ class _SubjectListState extends State<SubjectList> {
           );
         },
         onTap: () {
-          showSnackBar(context, Text("Sorry Unimplemented Yet"));
+          Navigator.of(context).push(
+              MaterialPageRoute(builder: (_) => QuestionList(subject, widget.archived))
+          ).then((_) {
+            setState(() {
+              isLoading = true;
+            });
+            doInitStuff();
+          },);
         },
       ),
     );

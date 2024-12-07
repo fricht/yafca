@@ -2,7 +2,6 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:yafca/database.dart';
-import 'package:yafca/utils.dart';
 
 
 class TakeTest extends StatefulWidget {
